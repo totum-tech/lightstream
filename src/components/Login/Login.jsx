@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from 'rebass';
+import loginInterface from './interface';
 
 const Login = () => (
   <div style={{ height: '100px' }}>
@@ -10,4 +11,4 @@ const Login = () => (
   </div>
 );
 
-export default Login;
+export default loginInterface(Login);
