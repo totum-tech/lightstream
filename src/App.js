@@ -20,7 +20,7 @@ class App extends Component {
           <Group name="Living Room" on={true}>
             <Bulb
               debug
-              name="Bloom 1"
+              name="Left Patio Bloom"
               selected={true}
               on={true}
               effect={/* none - colorloop */ 'none'}
@@ -32,7 +32,7 @@ class App extends Component {
             />
             <Bulb
               debug
-              name="Bloom 2"
+              name="Right Patio Bloom"
               selected={true}
               on={true}
               effect={/* none - colorloop */ 'none'}
@@ -44,7 +44,7 @@ class App extends Component {
             />
             <Bulb
               debug
-              name="Bulb 1"
+              name="Master Hallway Bulb"
               selected={true}
               on={true}
               effect={/* none - colorloop */ 'none'}

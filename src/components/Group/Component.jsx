@@ -8,15 +8,16 @@ class Group extends React.Component {
   }
 
   render() {
+    const { children, name } = this.props;
+    const bulbs = children.map(({ props }) => props);
+    console.log('Bulb configs', bulbs);
     return (
-      <Card style={{
-         width: '300px'
-       }}>
+      <Card style={{ width: '300px' }}>
         <Container>
           <Heading>
-            {this.props.name}
+            {name}
           </Heading>
-          {this.props.children}
+          {children}
         </Container>
       </Card>
     );

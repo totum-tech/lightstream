@@ -5,8 +5,9 @@ import { compose } from 'recompose';
 import localModule from '../localModule';
 import debugModule from './module';
 
-const addDebugMode = () => Component => {
+const sanitize = ({children: _, ... restProps }) => restProps;
 
+const addDebugMode = () => Component => {
   const TetheredComponent = ({
     wrapper = 'div',
     hovering: { active },
@@ -32,7 +33,7 @@ const addDebugMode = () => Component => {
       </span>
       {active &&
         <div style={{ backgroundColor: 'white', width: 'auto' }}>
-          <JSONViewer json={props} />
+          <JSONViewer json={sanitize(props)} />
         </div>
       }
     </Tether>
