@@ -6,7 +6,9 @@ export default createModule({
     loggedIn: false,
     token: '',
     loading: false,
+    errors: [],
   },
+  selector: state => state.app,
   transformations: {
     login: state => ({ ...state, loading: true}),
     loginSuccess: {

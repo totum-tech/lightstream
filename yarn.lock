@@ -4560,6 +4560,10 @@ redux:
     loose-envify "^1.1.0"
     symbol-observable "^1.0.2"
 
+redux-loop:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/redux-loop/-/redux-loop-2.2.2.tgz#1df804487be0f79daf7eff065ad8301ce255fd4e"
+
 redux-modules:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/redux-modules/-/redux-modules-1.0.0.tgz#48d6ec69e71dba8bb259d179087859173f2971f6"

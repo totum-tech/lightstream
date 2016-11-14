@@ -2,9 +2,20 @@ import React from 'react';
 
 const wrapLogin = Component => {
   class HueLogin extends React.Component {
+    constructor(props) {
+      super(props);
+    }
+
+    handleLogin = () => {
+
+    }
+
     render() {
       return (
-        <Component {...this.props} />
+        <Component
+          onLogin={this.handleLogin}
+          {...this.props}
+        />
       );
     }
   }

@@ -1,13 +1,21 @@
 import React from 'react';
-import { Button } from 'rebass';
+import { connectModule } from 'redux-modules';
+import { Container } from 'rebass';
+import { compose } from 'recompose';
+
+import debugMode from '../../utils/debugMode';
 import Login from '../Login';
+import module from './module';
 
 const Controller = ({ children }) => (
-  <div style={{ height: '100px' }}>
+  <Container>
     Controller
     <Login />
     {children}
-  </div>
+  </Container>
 );
 
-export default Controller;
+export default compose(
+  connectModule(module),
+  debugMode()
+)(Controller);

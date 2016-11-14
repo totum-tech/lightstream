@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from 'rebass';
+import { Button, Input } from 'rebass';
 import loginInterface from './interface';
 
 const Login = () => (

@@ -13,6 +13,7 @@
     "rebass": "^0.3.3",
     "recompose": "^0.20.2",
     "redux": "^3.6.0",
+    "redux-loop": "^2.2.2",
     "redux-modules": "^1.0.0"
   },
   "scripts": {

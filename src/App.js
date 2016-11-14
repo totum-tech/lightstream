@@ -5,7 +5,6 @@ import logo from './logo.svg';
 import './App.css';
 
 import Bulb from './components/Bulb';
-import Login from './components/Login';
 import Group from './components/Group';
 import Controller from './components/Controller';
 
@@ -21,6 +20,7 @@ class App extends Component {
           <Controller ipAddress="192.168.1.71">
             <Group name="Living Room" on={true}>
               <Bulb
+                debug
                 name="Left Patio Bloom"
                 selected={true}
                 on={true}
@@ -32,6 +32,7 @@ class App extends Component {
                 transitionTime={/* n, n=100ms */ 1}
               />
               <Bulb
+                debug
                 name="Right Patio Bloom"
                 selected={true}
                 on={true}
@@ -43,6 +44,7 @@ class App extends Component {
                 transitionTime={/* n, n=100ms */ 1}
               />
               <Bulb
+                debug
                 name="Master Hallway Bulb"
                 selected={true}
                 on={true}
