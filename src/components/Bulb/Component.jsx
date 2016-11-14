@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
-import JSONViewer from 'react-json-viewer';
+import debugMode from '../../utils/debugMode';
 
-export default class Bulb extends React.Component {
+class Bulb extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -10,7 +10,6 @@ export default class Bulb extends React.Component {
     return (
       <div>
         Bulb
-        <JSONViewer json={this.props} />
       </div>
     );
   }
@@ -26,3 +25,5 @@ Bulb.propTypes = {
   temperature: PropTypes.number,
   transitionTime: PropTypes.number,
 };
+
+export default debugMode()(Bulb);

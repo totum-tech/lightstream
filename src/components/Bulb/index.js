@@ -1,2 +1,2 @@
-import Bulb from './Bulb';
-export default Bulb;
+import Component from './Component';
+export default Component;
