@@ -5,6 +5,7 @@ import logo from './logo.svg';
 import './App.css';
 import Bulb from './components/Bulb';
 import Login from './components/Login';
+import Group from './components/Group';
 
 class App extends Component {
   render() {
@@ -16,6 +17,7 @@ class App extends Component {
             <h2>react-hue</h2>
           </div>
           <Login />
+          <Group name="Living Room" on={true}>
             <Bulb
               debug
               name="Bloom 1"
@@ -52,6 +54,7 @@ class App extends Component {
               temperature={/* 153-500 */ 400}
               transitionTime={/* n, n=100ms */ 1}
             />
+          </Group>
         </div>
       </ModuleProvider>
     );
