@@ -1,7 +1,7 @@
 import React from 'react';
 import { connectModule } from 'redux-modules';
 import { Container } from 'rebass';
-import { compose } from 'recompose';
+import { compose, lifecycle } from 'recompose';
 
 import debugMode from '../../utils/debugMode';
 import Login from '../Login';
@@ -17,5 +17,11 @@ const Controller = ({ children }) => (
 
 export default compose(
   connectModule(module),
-  debugMode()
+  // debugMode(),
+  lifecycle({
+    componentDidMount() {
+      this.props.actions.init({ ipAddress: this.props.ipAddress });
+      this.props.actions.login('react-hue');
+    },
+  })
 )(Controller);

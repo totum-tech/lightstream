@@ -1,20 +1,49 @@
 import { createModule } from 'redux-modules';
+import {
+  loop,
+  Effects,
+  liftState,
+} from 'redux-loop';
 
-export default createModule({
-  name: 'app',
+import * as hue from '../../services/hue';
+
+const module = createModule({
+  name: 'controller',
   initialState: {
     loggedIn: false,
-    token: '',
+    username: '',
     loading: false,
     errors: [],
+    ipAddress: '',
   },
-  selector: state => state.app,
+  middleware: [
+    action => {
+      console.log(action.type, '::', action);
+      return action;
+    },
+  ],
+  selector: state => state.controller[0],
+  composes: [liftState],
   transformations: {
-    login: state => ({ ...state, loading: true}),
+    init: (state, { payload }) => ({
+      ...state,
+      ipAddress: payload.ipAddress,
+    }),
+    login: (state, { payload }) => loop(
+      { ...state, loading: true },
+      Effects.promise(
+        hue.login({
+          onSuccess: module.actions.loginSuccess,
+          onError: module.actions.loginError,
+        }),
+        state.ipAddress,
+        payload
+      )
+    ),
     loginSuccess: {
-      reducer: (state, {payload}) => ({
+      reducer: (state, {payload: { username }}) => ({
         ...state,
-        token: payload,
+        username: username,
         loading: false,
       }),
     },
@@ -24,3 +53,5 @@ export default createModule({
     }),
   },
 });
+
+export default module;
