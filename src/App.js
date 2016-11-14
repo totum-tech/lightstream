@@ -19,7 +19,6 @@ class App extends Component {
           <Login />
           <Group name="Living Room" on={true}>
             <Bulb
-              debug
               name="Left Patio Bloom"
               selected={true}
               on={true}
@@ -31,7 +30,6 @@ class App extends Component {
               transitionTime={/* n, n=100ms */ 1}
             />
             <Bulb
-              debug
               name="Right Patio Bloom"
               selected={true}
               on={true}
@@ -43,7 +41,6 @@ class App extends Component {
               transitionTime={/* n, n=100ms */ 1}
             />
             <Bulb
-              debug
               name="Master Hallway Bulb"
               selected={true}
               on={true}

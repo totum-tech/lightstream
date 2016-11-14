@@ -10,11 +10,12 @@ const sanitize = ({children: _, ... restProps }) => restProps;
 const addDebugMode = () => Component => {
   const TetheredComponent = ({
     wrapper = 'div',
+    debug,
     hovering: { active },
     actions: { setActive, setInactive },
     ...props
-  }) => (
-    // include some conditional here that checks if we're in DEV mode
+  }) => !debug ?
+    <Component { ...props } /> : (
     <Tether
       renderElementTag={wrapper}
       attachment="top center"
@@ -27,9 +28,7 @@ const addDebugMode = () => Component => {
       ]}
     >
       <span onMouseOver={setActive} onMouseOut={setInactive}>
-        <Component
-          {...props}
-        />
+        <Component {...props} />
       </span>
       {active &&
         <div style={{ backgroundColor: 'white', width: 'auto' }}>
@@ -39,8 +38,7 @@ const addDebugMode = () => Component => {
     </Tether>
   );
 
-  // return TetheredComponent;
   return localModule(debugModule)(TetheredComponent);
-  };
+};
 
   export default addDebugMode;
