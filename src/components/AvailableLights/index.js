@@ -3,7 +3,7 @@ import Bulb from '../Bulb';
 import { Button } from 'rebass';
 
 const AvailableLights = ({ lights, fetchLights, updateLight }) => (
-  <div>
+  <div style={{flexDirection: 'row'}}>
     <Button onClick={fetchLights}>
       Fetch Lights
     </Button>

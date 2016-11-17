@@ -19,6 +19,7 @@ const module = createModule({
     errors: null,
     ipAddress: '',
     bulbs: {},
+    loggedActions: [],
   },
   middleware: [
     action => {
@@ -85,7 +86,8 @@ const module = createModule({
       errors: payload,
       loading: false,
     }),
-    updateLight: (state, { payload, meta }) => {
+    updateLight: (state, action) => {
+      const { payload, meta } = action;
       const [
         nstate,
         neffects,
@@ -93,11 +95,25 @@ const module = createModule({
 
       return loop(
         { ...state, bulbs: { ...state.bulbs, [meta.id]: nstate } },
-        Effects.lift(
-          neffects,
-          a => module.actions.updateLight(a, {id: meta.id})
-        )
+        Effects.batch([
+          Effects.lift(
+            neffects,
+            a => module.actions.updateLight(a, {id: meta.id})
+          ),
+          Effects.constant(module.actions.logAction(action)),
+        ])
       );
+    },
+    logAction: (state, { payload }) => ({
+      ...state,
+      loggedActions: state.loggedActions.concat(payload),
+    }),
+    timetravel: {
+      reducer: (state, { payload }) => {
+        const playAction = state.loggedActions[payload];
+        if (!playAction) { return state; }
+        return loop(state, Effects.constant(playAction));
+      },
     },
   },
 });
