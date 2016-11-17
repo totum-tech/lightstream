@@ -13,7 +13,7 @@ const module = createModule({
     loggedIn: false,
     username: '',
     loading: false,
-    errors: [],
+    errors: null,
     ipAddress: '',
   },
   middleware: [
@@ -22,7 +22,7 @@ const module = createModule({
       return action;
     },
   ],
-  selector: state => state.controller[0],
+  selector: state => state.controller,
   composes: [liftState],
   transformations: {
     init: (state, { payload }) => ({

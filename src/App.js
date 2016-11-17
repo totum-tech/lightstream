@@ -19,7 +19,7 @@ class App extends Component {
             <img src={logo} className="App-logo" alt="logo" />
             <h2>react-hue</h2>
           </div>
-          <Controller debug ipAddress="192.168.1.71">
+          <Controller ipAddress="192.168.1.71">
             <Group name="Living Room" on={true}>
               <Bulb
                 debug

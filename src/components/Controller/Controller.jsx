@@ -7,10 +7,16 @@ import debugMode from '../../utils/debugMode';
 import Login from '../Login';
 import module from './module';
 
-const Controller = ({ children }) => (
+const Controller = ({ children, errors }) => (
   <Container>
     Controller
     <Login />
+    {errors &&
+      <div>
+        <h2>Error!</h2>
+        {errors.description}
+      </div>
+    }
     {children}
   </Container>
 );
