@@ -6,6 +6,8 @@
     "react-scripts": "0.7.0"
   },
   "dependencies": {
+    "flyd": "^0.2.2",
+    "kefir": "^3.6.0",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "react-json-viewer": "^1.6.0",
@@ -14,7 +16,8 @@
     "recompose": "^0.20.2",
     "redux": "^3.6.0",
     "redux-loop": "2.1.1",
-    "redux-modules": "^1.0.0"
+    "redux-modules": "^1.0.0",
+    "rxjs": "^5.0.0-rc.3"
   },
   "scripts": {
     "start": "react-scripts start",

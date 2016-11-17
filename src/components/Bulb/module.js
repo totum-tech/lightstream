@@ -4,7 +4,6 @@ import { light } from '../../services/hue';
 
 const set = key => (state, { payload }) => ({ ...state, [key]: payload });
 
-
 const module = createModule({
   name: 'bulb',
   initialState: {
@@ -32,33 +31,56 @@ const module = createModule({
   transformations: {
     setSuccess: state =>
       ({ ...state, loading: false }),
+
     setError: (state, {payload}) =>
       ({ ...state, loading: false, errors: payload }),
+
     setPower: (state, action) => loop(
       set('power')(state, action),
       Effects.promise(
         light.set({
           onSuccess: module.actions.setSuccess,
-          onError: module.actions.setError
+          onError: module.actions.setError,
         }),
         state.links.updateState,
         { on: action.payload }
       )
-      // Effects.promise(
-      //   light.set,
-      //   state.links.updateState,
-      //   { power: action.payload }
-      // )
     ),
 
     setBrightness: (state, action) => loop(
       set('brightness')(state, action),
-      Effects.none()
-      // Effects.promise(
-      //   light.set,
-      //   state.links.updateState,
-      //   { brightness: action.payload }
-      // )
+      Effects.promise(
+        light.set({
+          onSuccess: module.actions.setSuccess,
+          onError: module.actions.setError,
+        }),
+        state.links.updateState,
+        { bri: action.payload }
+      )
+    ),
+
+    setHue: (state, action) => loop(
+      set('hue')(state, action),
+      Effects.promise(
+        light.set({
+          onSuccess: module.actions.setSuccess,
+          onError: module.actions.setError,
+        }),
+        state.links.updateState,
+        { hue: Number(action.payload) }
+      )
+    ),
+
+    setSaturation: (state, action) => loop(
+      set('hue')(state, action),
+      Effects.promise(
+        light.set({
+          onSuccess: module.actions.setSuccess,
+          onError: module.actions.setError,
+        }),
+        state.links.updateState,
+        { sat: action.payload }
+      )
     ),
   },
 });
