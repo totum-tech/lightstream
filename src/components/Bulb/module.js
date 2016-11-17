@@ -72,14 +72,26 @@ const module = createModule({
     ),
 
     setSaturation: (state, action) => loop(
-      set('hue')(state, action),
+      set('saturation')(state, action),
       Effects.promise(
         light.set({
           onSuccess: module.actions.setSuccess,
           onError: module.actions.setError,
         }),
         state.links.updateState,
-        { sat: action.payload }
+        { sat: Number(action.payload) }
+      )
+    ),
+
+    setXY: (state, action) => loop(
+      set('xy')(state, action),
+      Effects.promise(
+        light.set({
+          onSuccess: module.actions.setSuccess,
+          onError: module.actions.setError,
+        }),
+        state.links.updateState,
+        { xy: action.payload.map(coord => Number(coord)) }
       )
     ),
   },

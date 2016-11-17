@@ -18,7 +18,7 @@ const Controller = ({ children, errors, username, actions, bulbs, loggedActions 
       </div>
     }
     <Slider
-      name="Timetravel"
+      label="Timetravel"
       min={5}
       max={loggedActions.length}
       onChange={({target}) => actions.timetravel(target.value)}

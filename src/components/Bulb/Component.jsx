@@ -6,19 +6,19 @@ import debugMode from '../../utils/debugMode';
 import module from './module';
 import flyd from 'flyd';
 import every from 'flyd/module/every';
-import { batchWhen } from '../../utils/batchWhen';
+import { throttleWhen } from '../../utils/flydHelpers';
+import { hexToRgb, rgbToHue } from './utils';
 
 class Bulb extends React.Component {
   constructor(props) {
     super(props);
     this.slider$  = flyd.stream();
-    this.throttled$ = batchWhen(every(10), this.slider$);
-    flyd.on(props.actions.setHue, this.slider$);
-    flyd.on(x => console.log('throttled', x), this.throttled$);
+    this.throttled$ = throttleWhen(every(100), this.slider$);
+    flyd.on(props.actions.setHue, this.throttled$);
   }
 
   render() {
-    const { actions: { setPower, setHue } } = this.props;
+    const { actions: { setPower, setHue, setSaturation, setXY } } = this.props;
     return (
       <Card
         rounded
@@ -36,16 +36,28 @@ class Bulb extends React.Component {
             On
           </Button>
         }
-        <Heading level={4} size={4}>
-          {this.props.hue}
-          <Slider
-            label="Hue"
-            min={0}
-            max={65535}
-            value={this.props.hue}
-            onChange={({target}) => this.slider$(target.value)}
-          />
-        </Heading>
+
+        <Slider
+          label={`Hue: ${this.props.hue}`}
+          min={0}
+          max={65535}
+          value={this.props.hue}
+          onChange={({target}) => this.slider$(target.value)}
+        />
+
+        <input
+          type="color"
+          onChange={({target}) => setXY(rgbToHue(hexToRgb(target.value)))}
+        />
+
+        <Slider
+          label={`Saturation: ${this.props.saturation}`}
+          min={0}
+          max={254}
+          value={this.props.saturation}
+          onChange={({target}) => setSaturation(target.value)}
+        />
+
 
       </Card>
     );

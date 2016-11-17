@@ -92,16 +92,16 @@ const module = createModule({
         nstate,
         neffects,
       ] = bulbModule.reducer(state.bulbs[meta.id], payload);
-
+      const effects = [
+        Effects.lift(
+          neffects,
+          a => module.actions.updateLight(a, {id: meta.id})
+        ),
+      ];
+      if (!meta.replay) { effects.push(Effects.constant(module.actions.logAction(action)) )}
       return loop(
         { ...state, bulbs: { ...state.bulbs, [meta.id]: nstate } },
-        Effects.batch([
-          Effects.lift(
-            neffects,
-            a => module.actions.updateLight(a, {id: meta.id})
-          ),
-          Effects.constant(module.actions.logAction(action)),
-        ])
+        Effects.batch(effects)
       );
     },
     logAction: (state, { payload }) => ({
@@ -112,7 +112,7 @@ const module = createModule({
       reducer: (state, { payload }) => {
         const playAction = state.loggedActions[payload];
         if (!playAction) { return state; }
-        return loop(state, Effects.constant(playAction));
+        return loop(state, Effects.constant({...playAction, meta: { ...playAction.meta, replay: true }}));
       },
     },
   },

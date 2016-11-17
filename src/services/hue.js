@@ -16,6 +16,7 @@ const deserializeBulbs = ({ ipAddress, token }) => bulbsById =>
         temperature: state.temp,
         transitionTime: state.transitiontime,
         alert: state.alert,
+        xy: state.xy,
         meta,
         links: {
           updateState: `${getBasepath(ipAddress, token)}/lights/${id}/state`,
