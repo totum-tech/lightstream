@@ -1,6 +1,9 @@
 import React, { PropTypes } from 'react';
+import { Card, Heading, Button } from 'rebass';
+import { compose } from 'recompose';
+import { connectModule } from 'redux-modules';
 import debugMode from '../../utils/debugMode';
-import { Card, Heading } from 'rebass';
+import module from './module';
 
 class Bulb extends React.Component {
   constructor(props) {
@@ -16,6 +19,12 @@ class Bulb extends React.Component {
         <Heading level={2} size={2}>
           {this.props.name}
         </Heading>
+        <Button onClick={() => this.props.actions.setPower(true)}>
+          On
+        </Button>
+        <Button onClick={() => this.props.actions.setPower(false)}>
+          Off
+        </Button>
       </Card>
     );
   }
@@ -33,4 +42,6 @@ Bulb.propTypes = {
   transitionTime: PropTypes.number,
 };
 
-export default debugMode()(Bulb);
+export default compose(
+  connectModule(module)
+)(Bulb);

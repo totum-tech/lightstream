@@ -2,12 +2,12 @@ import React from 'react';
 import { connectModule } from 'redux-modules';
 import { Container } from 'rebass';
 import { compose, lifecycle } from 'recompose';
-
 import debugMode from '../../utils/debugMode';
 import Login from '../Login';
+import AvailableLights from '../AvailableLights';
 import module from './module';
 
-const Controller = ({ children, errors, username, actions }) => (
+const Controller = ({ children, errors, username, actions, bulbs }) => (
   <Container>
     Controller
     <Login onLogin={actions.login} activeProfile={username}/>
@@ -18,6 +18,11 @@ const Controller = ({ children, errors, username, actions }) => (
       </div>
     }
     {children}
+    <AvailableLights
+      updateLight={actions.updateLight}
+      lights={bulbs}
+      fetchLights={actions.fetchLights}
+    />
   </Container>
 );
 

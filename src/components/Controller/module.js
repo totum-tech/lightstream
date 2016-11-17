@@ -8,6 +8,8 @@ import {
 import * as hue from '../../services/hue';
 import * as storage from '../../services/localStorage';
 
+import bulbModule from '../Bulb/module';
+
 const module = createModule({
   name: 'controller',
   initialState: {
@@ -16,6 +18,7 @@ const module = createModule({
     loading: false,
     errors: null,
     ipAddress: '',
+    bulbs: {},
   },
   middleware: [
     action => {
@@ -60,6 +63,42 @@ const module = createModule({
       errors: payload,
       loading: false,
     }),
+    fetchLights: state => loop(
+      { ...state, loading: true },
+      Effects.promise(
+        hue.lights.list({
+          onSuccess: module.actions.fetchLightsSuccess,
+          onError: module.actions.fetchLightsError,
+        }),
+        state.ipAddress,
+        state.username,
+      )
+    ),
+    fetchLightsSuccess: {
+      reducer: (state, { payload }) => ({
+        ...state,
+        bulbs: payload,
+      }),
+    },
+    loginError: (state, { payload }) => ({
+      ...state,
+      errors: payload,
+      loading: false,
+    }),
+    updateLight: (state, { payload, meta }) => {
+      const [
+        nstate,
+        neffects,
+      ] = bulbModule.reducer(state.bulbs[meta.id], payload);
+
+      return loop(
+        { ...state, bulbs: { ...state.bulbs, [meta.id]: nstate } },
+        Effects.lift(
+          neffects,
+          a => module.actions.updateLight(a, {id: meta.id})
+        )
+      );
+    },
   },
 });
 
