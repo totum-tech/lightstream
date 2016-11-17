@@ -1,7 +1,7 @@
 export const login = ({ onSuccess, onError }) => (ipAddress, username) =>
   fetch(`http://${ipAddress}/api`, {
     method: 'POST',
-    body: JSON.stringify({ devicetype: 'ReactHue#username' }),
+    body: JSON.stringify({ devicetype: `reacthue#${username}` }),
   })
   .then(response => response.json())
   .then(json => {

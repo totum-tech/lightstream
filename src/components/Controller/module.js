@@ -6,6 +6,7 @@ import {
 } from 'redux-loop';
 
 import * as hue from '../../services/hue';
+import * as storage from '../../services/localStorage';
 
 const module = createModule({
   name: 'controller',
@@ -25,10 +26,14 @@ const module = createModule({
   selector: state => state.controller,
   composes: [liftState],
   transformations: {
-    init: (state, { payload }) => ({
-      ...state,
-      ipAddress: payload.ipAddress,
-    }),
+    init: (state, { payload }) => loop(
+      { ...state, ipAddress: payload.ipAddress },
+      Effects.promise(
+        k => storage.get(k).then(module.actions.setUser),
+        'react-hue-user'
+      )
+    ),
+    setUser: (state, { payload }) => ({ ...state, username: payload }),
     login: (state, { payload }) => loop(
       { ...state, loading: true },
       Effects.promise(
@@ -41,13 +46,17 @@ const module = createModule({
       )
     ),
     loginSuccess: {
-      reducer: (state, {payload: { username }}) => ({
-        ...state,
-        username: username,
-        loading: false,
-      }),
+      reducer: (state, {payload: { username }}) => loop(
+        { ...state, username: username, loading: false, errors: null },
+        Effects.promise(
+          (k, v) => storage.set(k, v).then(() => ({ type: 'NOOP' })),
+          'react-hue-user',
+          username
+        )
+      ),
     },
     loginError: (state, {payload}) => ({
+      ...state,
       errors: payload,
       loading: false,
     }),

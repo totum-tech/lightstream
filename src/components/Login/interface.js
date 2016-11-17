@@ -7,7 +7,7 @@ const wrapLogin = Component => {
     }
 
     handleLogin = () => {
-
+      this.props.onLogin('react-hue');
     }
 
     render() {

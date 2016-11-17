@@ -2,12 +2,14 @@ import React from 'react';
 import { Button, Input } from 'rebass';
 import loginInterface from './interface';
 
-const Login = () => (
+const Login = ({ onLogin, activeProfile }) => (
   <div style={{ height: '100px' }}>
-    Login
-    <Button>
-      Login
-    </Button>
+    {!activeProfile &&
+      <Button onClick={onLogin}>
+        Login
+      </Button>
+    }
+    {activeProfile && <i>{activeProfile}</i>}
   </div>
 );
 
