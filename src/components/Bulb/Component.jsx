@@ -98,6 +98,7 @@ class Bulb extends React.Component {
           <Button
             icon={power ? "bulb" : "close"}
             shape="circle"
+            size="large"
             onClick={() => setPower(!power)}
             style={buttonStyle}
           />
