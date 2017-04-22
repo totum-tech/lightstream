@@ -1,6 +1,6 @@
 import React from 'react';
 import Formation from '../Formation';
-import { Input, Card, Heading } from 'rebass';
+import { Input, Card, Heading, Button } from 'antd';
 import { createModule } from 'redux-modules';
 import localModule from '../../utils/localModule';
 
@@ -14,15 +14,17 @@ const module = createModule({
 
 // TODO: This should hold the list module for the bulbs module
 const FormationList = ({ onCreate, actions, formations, setFormation, newFormation }) => (
-  <div style={{ display: 'flex', flexDirection: 'row', width: '100%', }}>
+  <div style={{ display: 'flex', flexDirection: 'row', width: '100%', padding: '30px' }}>
     {(formations || []).map(formation =>
-      <Formation {...formation} onSelect={setFormation} />
+      <div style={{ marginLeft: '30px' }}>
+        <Formation {...formation} onSelect={setFormation} />
+      </div>
     )}
-    <div>
+    <Card style={{ width: '250px', marginLeft: '30px' }}>
       <label>New Formation</label>
-      <input onChange={({ target }) => actions.setName(target.value)}/>
-      <button onClick={() => onCreate(newFormation)}>Save Current Formation</button>
-    </div>
+      <Input onChange={({ target }) => actions.setName(target.value)}/>
+      <Button onClick={() => onCreate(newFormation)}>Save Current Formation</Button>
+    </Card>
   </div>
 
 );

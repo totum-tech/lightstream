@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Card, Input, Button } from 'rebass';
+import { Card, Input, Button } from 'antd';
 import { createModule } from 'redux-modules';
 import localModule from '../../utils/localModule';
 

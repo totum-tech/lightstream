@@ -1,18 +1,13 @@
 import React, { PropTypes } from 'react';
 import debugMode from '../../utils/debugMode';
-import { Card, Heading, Button } from 'rebass';
+import { Heading } from 'rebass';
+import { Card, Button } from 'antd';
 
 class Formation extends React.Component {
   render() {
     const { name, bulbs, onSelect } = this.props;
     return (
-      <Card
-        rounded
-        width={256}
-      >
-        <Heading level={2} size={2}>
-          {name}
-        </Heading>
+      <Card title={name}>
         <Button onClick={() => onSelect({ name, bulbs })}>
           Activate!
         </Button>
