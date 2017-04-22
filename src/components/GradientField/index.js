@@ -39,14 +39,12 @@ class GradientField extends React.Component {
 
     const body = document.querySelector('body');
     body.style.backgroundColor = `hsl(${horizontal}, ${s}%, ${vertical}%)`;
-    console.log(body.style.backgroundColor);
   }
 
   render() {
     const { style } = this.props;
     return (
       <div>
-        Gradient Field
       </div>
     );
   }

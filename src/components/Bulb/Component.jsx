@@ -1,9 +1,12 @@
 import React, { PropTypes } from 'react';
+import { findDOMNode } from 'react-dom';
 import { Card, Heading, Button, Slider } from 'rebass';
 import { compose } from 'recompose';
 import { connectModule } from 'redux-modules';
 import module from './module';
 import flyd from 'flyd';
+import { Observable } from 'rxjs';
+
 import every from 'flyd/module/every';
 import { throttleWhen } from '../../utils/flydHelpers';
 import { ColorPicker, Color, HarmonyTypes } from 'react-colorizer';
@@ -16,6 +19,28 @@ class Bulb extends React.Component {
     flyd.on(props.actions.setHue, this.throttled$);
   }
 
+  componentDidMount() {
+    const { actions: { setCoordinates } } = this.props;
+
+    const mouseDown$ = Observable.fromEvent(this.element, 'mousedown');
+    const mouseMove$ = Observable.fromEvent(document, 'mousemove');
+    const mouseUp$ = Observable.fromEvent(document, 'mouseup');
+
+    const mouseDrag$ = mouseDown$
+    .flatMap(e => {
+      e.preventDefault();
+      console.log('Down event', e);
+      return mouseMove$
+      .map((e) => {
+        const { clientX, clientY } = e;
+        return { clientX, clientY };
+      })
+      .takeUntil(mouseUp$);
+    })
+    .subscribe(setCoordinates);
+
+  }
+
   render() {
     const {
       actions: {
@@ -26,68 +51,33 @@ class Bulb extends React.Component {
         setBrightness,
         setTransitionTime,
       },
+      coordinates,
     } = this.props;
+
+    const elementStyle = coordinates
+      ? { position: 'absolute', left: coordinates.clientX, top: coordinates.clientY }
+      : { };
+
     return (
-      <Card
-        rounded
-        width={256}
-        style={{ margin: '5px' }}
+      <div
+        ref={el => this.element = findDOMNode(el)}
+        style={elementStyle}
       >
-        <Slider
-          name="Transition Time"
-          label={`Transition Time: ${this.props.transitionTime}`}
-          min={0}
-          max={10}
-          value={this.props.transitionTime}
-          onChange={({target}) => setTransitionTime(target.value)}
-        />
-
-        <Slider
-          name="Hue"
-          label={`Hue: ${this.props.hue}`}
-          min={0}
-          max={65535}
-          value={this.props.hue}
-          onChange={({target}) => this.slider$(target.value)}
-        />
-
-        <input
-          type="color"
-          onChange={({target}) => setHex(target.value)}
-        />
-
-        <Slider
-          name="Saturation"
-          label={`Saturation: ${this.props.saturation}`}
-          min={0}
-          max={254}
-          value={this.props.saturation}
-          onChange={({target}) => setSaturation(target.value)}
-        />
-
-        <Slider
-          name="Brightness"
-          label={`Brightness: ${this.props.brightness}`}
-          min={1}
-          max={254}
-          value={this.props.brightness}
-          onChange={({target}) => setBrightness(target.value)}
-        />
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'space-around' }}>
-          <Heading level={2} size={2}>
-            {this.props.name}
-          </Heading>
-          {this.props.power ?
-            <Button onClick={() => setPower(false)}>
-              Off
-            </Button>
-            :
-            <Button onClick={() => setPower(true)}>
-              On
-            </Button>
-          }
-          </div>
-      </Card>
+      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'space-around' }}>
+        <Heading level={2} size={2}>
+          {this.props.name}
+        </Heading>
+        {this.props.power ?
+          <Button onClick={() => setPower(false)}>
+            Off
+          </Button>
+          :
+          <Button onClick={() => setPower(true)}>
+            On
+          </Button>
+        }
+        </div>
+      </div>
     );
   }
 }

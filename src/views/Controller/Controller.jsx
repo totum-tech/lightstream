@@ -19,7 +19,7 @@ const Controller = ({
   loggedActions,
   formations,
 }) => (
-  <Container>
+  <div style={{ width: '100vw', height: '100vh' }}>
     <div
       style={{
       position: 'static',
@@ -28,8 +28,6 @@ const Controller = ({
       width: '100%',
       top: 0, left: 0, right: 0,
     }}>
-      Controller
-      <Login onLogin={actions.login} activeProfile={username}/>
       {errors &&
         <div>
           <h2>Error!</h2>
@@ -54,7 +52,8 @@ const Controller = ({
         }}
       />
     </div>
-  </Container>
+    <Login onLogin={actions.login} activeProfile={username} />
+  </div>
 );
 
 export default compose(

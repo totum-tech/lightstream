@@ -17,6 +17,7 @@ const module = createModule({
     saturation: 254,
     temperature: 400,
     transitionTime: 1,
+    coordinate: { pageX: 100, pageY: 100 },
     meta: {
       'type': '',
       'name': '',
@@ -145,6 +146,11 @@ const module = createModule({
         state.links.updateState,
         { xy: action.payload.map(coord => Number(coord)) }
       )
+    ),
+
+    setCoordinates: (state, action) => loop(
+      set('coordinates')(action.payload)(state),
+      Effects.none()
     ),
   },
 });
