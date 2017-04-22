@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { findDOMNode } from 'react-dom';
 import { Card, Heading, Button, Slider } from 'rebass';
+import { Switch, Popover, Icon } from 'antd';
 import { compose } from 'recompose';
 import { connectModule } from 'redux-modules';
 import module from './module';
@@ -62,6 +63,7 @@ class Bulb extends React.Component {
         setTransitionTime,
       },
       coordinates,
+      power,
     } = this.props;
 
     const elementStyle = coordinates
@@ -69,7 +71,13 @@ class Bulb extends React.Component {
         position: 'absolute',
         left: coordinates.clientX,
         top: coordinates.clientY,
+        height: '40px',
+        width: '40px',
         backgroundColor: `hsl(${coordinates.hue}, 50%, ${coordinates.lightness}%`,
+        borderRadius: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }
       : { };
 
@@ -78,20 +86,16 @@ class Bulb extends React.Component {
         ref={el => this.element = findDOMNode(el)}
         style={elementStyle}
       >
-      <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'space-around' }}>
-        <Heading level={2} size={2}>
-          {this.props.name}
-        </Heading>
-        {this.props.power ?
-          <Button onClick={() => setPower(false)}>
-            Off
-          </Button>
-          :
-          <Button onClick={() => setPower(true)}>
-            On
-          </Button>
-        }
-        </div>
+        <Popover
+          content={
+            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'space-around' }}>
+              <label>{this.props.name}</label>
+              <Switch onChange={setPower} checked={power}/>
+            </div>
+          }
+        >
+          <Icon type="bulb" style={{ fontSize: 30, color: 'white' }} />
+        </Popover>
       </div>
     );
   }
