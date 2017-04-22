@@ -72,7 +72,7 @@ class Bulb extends React.Component {
         backgroundColor: `hsl(${coordinates.hue}, 50%, ${coordinates.lightness}%`,
       }
       : { };
-    console.log(elementStyle);
+
     return (
       <div
         ref={el => this.element = findDOMNode(el)}

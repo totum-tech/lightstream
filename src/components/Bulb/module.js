@@ -12,10 +12,6 @@ const module = createModule({
     name: '',
     power: true,
     effect: 'none',
-    brightness: 125,
-    hue: 65535,
-    saturation: 254,
-    temperature: 400,
     transitionTime: 1,
     coordinate: { pageX: 100, pageY: 100 },
     meta: {
@@ -53,10 +49,9 @@ const module = createModule({
     applyPreset: (state, { payload }) => loop(
       compose(
         set('brightness')(payload.brightness),
-        set('hue')(payload.hue),
-        set('saturation')(payload.saturation),
-        set('xy')(payload.xy),
-        set('transitionTime')(payload.transitionTime)
+        set('coordinates')(payload.coordinates),
+        set('power')(payload.power),
+        // set('transitionTime')(payload.transitionTime),
       )(state),
       Effects.promise(
         light.set({
@@ -65,12 +60,9 @@ const module = createModule({
         }),
         state.links.updateState,
         {
-          bri: Number(payload.brightness),
-          hue: Number(payload.hue),
-          sat: Number(payload.saturation),
           on: Number(payload.power),
           xy: payload.xy.map(coord => Number(coord)),
-          transitiontime: Number(payload.transitionTime),
+          // transitiontime: Number(payload.transitionTime),
         }
       )
     ),
@@ -148,17 +140,23 @@ const module = createModule({
       )
     ),
 
-    setCoordinates: (state, action) => loop(
-      set('coordinates')(action.payload)(state),
-      Effects.promise(
-        light.set({
-          onSuccess: module.actions.setSuccess,
-          onError: module.actions.setError,
-        }),
-        state.links.updateState,
-        { xy: rgbToHue(hslToRgb(action.payload.hue / 360, .5, action.payload.lightness / 100)).map(coord => Number(coord)) }
-      )
-    ),
+    setCoordinates: (state, action) => {
+      const xy = rgbToHue(hslToRgb(action.payload.hue / 360, .5, action.payload.lightness / 100));
+      return loop(
+        compose(
+          set('coordinates')(action.payload),
+          set('xy')(xy)
+        )(state),
+        Effects.promise(
+          light.set({
+            onSuccess: module.actions.setSuccess,
+            onError: module.actions.setError,
+          }),
+          state.links.updateState,
+          { xy: xy.map(coord => Number(coord)) }
+        )
+      );
+    },
   },
 });
 

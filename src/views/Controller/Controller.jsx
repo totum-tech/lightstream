@@ -53,6 +53,13 @@ const Controller = ({
       />
     </div>
     <Login onLogin={actions.login} activeProfile={username} />
+    <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
+      <FormationList
+        onCreate={actions.saveFormation}
+        formations={formations}
+        setFormation={actions.setActiveFormation}
+      />
+    </div>
   </div>
 );
 
