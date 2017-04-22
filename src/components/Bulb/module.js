@@ -1,8 +1,10 @@
 import { createModule } from 'redux-modules';
 import { liftState, Effects, loop } from 'redux-loop';
 import { light } from '../../services/hue';
+import { compose } from 'ramda';
+import { hexToRgb, rgbToHue } from './utils';
 
-const set = key => (state, { payload }) => ({ ...state, [key]: payload });
+const set = key => value => state => ({ ...state, [key]: value });
 
 const module = createModule({
   name: 'bulb',
@@ -36,7 +38,7 @@ const module = createModule({
       ({ ...state, loading: false, errors: payload }),
 
     setPower: (state, action) => loop(
-      set('power')(state, action),
+      set('power')(action.payload)(state),
       Effects.promise(
         light.set({
           onSuccess: module.actions.setSuccess,
@@ -47,20 +49,58 @@ const module = createModule({
       )
     ),
 
+    applyPreset: (state, { payload }) => loop(
+      compose(
+        set('brightness')(payload.brightness),
+        set('hue')(payload.hue),
+        set('saturation')(payload.saturation),
+        set('xy')(payload.xy),
+        set('transitionTime')(payload.transitionTime)
+      )(state),
+      Effects.promise(
+        light.set({
+          onSucess: module.actions.setSuccess,
+          onError: module.actions.setError,
+        }),
+        state.links.updateState,
+        {
+          bri: Number(payload.brightness),
+          hue: Number(payload.hue),
+          sat: Number(payload.saturation),
+          on: Number(payload.power),
+          xy: payload.xy.map(coord => Number(coord)),
+          transitiontime: Number(payload.transitionTime),
+        }
+      )
+    ),
+
     setBrightness: (state, action) => loop(
-      set('brightness')(state, action),
+      set('brightness')(action.payload)(state),
       Effects.promise(
         light.set({
           onSuccess: module.actions.setSuccess,
           onError: module.actions.setError,
         }),
         state.links.updateState,
-        { bri: action.payload }
+        { bri: Number(action.payload) }
+      )
+    ),
+
+
+    setTransitionTime: (state, action) => loop(
+      set('transitionTime')(action.payload)(state),
+      Effects.promise(
+        light.set({
+          onSuccess: module.actions.setSuccess,
+          onError: module.actions.setError,
+        }),
+        state.links.updateState,
+        { transitiontime: Number(action.payload) }
       )
     ),
 
     setHue: (state, action) => loop(
-      set('hue')(state, action),
+      set('hue')(action.payload)(state),
       Effects.promise(
         light.set({
           onSuccess: module.actions.setSuccess,
@@ -71,8 +111,20 @@ const module = createModule({
       )
     ),
 
+    setHex: (state, action) => loop(
+      set('hex')(action.payload)(state),
+      Effects.promise(
+        light.set({
+          onSuccess: module.actions.setSuccess,
+          onError: module.actions.setError,
+        }),
+        state.links.updateState,
+        { xy: rgbToHue(hexToRgb(action.payload)).map(coord => Number(coord)) }
+      )
+    ),
+
     setSaturation: (state, action) => loop(
-      set('saturation')(state, action),
+      set('saturation')(action.payload)(state),
       Effects.promise(
         light.set({
           onSuccess: module.actions.setSuccess,
@@ -84,7 +136,7 @@ const module = createModule({
     ),
 
     setXY: (state, action) => loop(
-      set('xy')(state, action),
+      set('xy')(action.payload)(state),
       Effects.promise(
         light.set({
           onSuccess: module.actions.setSuccess,
