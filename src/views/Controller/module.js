@@ -25,12 +25,6 @@ const module = createModule({
     formations: [],
     activeFormation: null,
   },
-  middleware: [
-    action => {
-      console.log(action.type, '::', action);
-      return action;
-    },
-  ],
   selector: state => state.controller,
   composes: [liftState],
   transformations: {

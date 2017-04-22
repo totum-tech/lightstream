@@ -2,7 +2,7 @@ import { createModule } from 'redux-modules';
 import { liftState, Effects, loop } from 'redux-loop';
 import { light } from '../../services/hue';
 import { compose } from 'ramda';
-import { hexToRgb, rgbToHue } from './utils';
+import { hexToRgb, rgbToHue, hslToRgb } from './utils';
 
 const set = key => value => state => ({ ...state, [key]: value });
 
@@ -150,7 +150,14 @@ const module = createModule({
 
     setCoordinates: (state, action) => loop(
       set('coordinates')(action.payload)(state),
-      Effects.none()
+      Effects.promise(
+        light.set({
+          onSuccess: module.actions.setSuccess,
+          onError: module.actions.setError,
+        }),
+        state.links.updateState,
+        { xy: rgbToHue(hslToRgb(action.payload.hue / 360, .5, action.payload.lightness / 100)).map(coord => Number(coord)) }
+      )
     ),
   },
 });

@@ -11,6 +11,11 @@ import every from 'flyd/module/every';
 import { throttleWhen } from '../../utils/flydHelpers';
 import { ColorPicker, Color, HarmonyTypes } from 'react-colorizer';
 
+const measureClient = () => ({
+  width: window.innerWidth,
+  height: window.innerHeight,
+});
+
 class Bulb extends React.Component {
   constructor(props) {
     super(props);
@@ -23,7 +28,7 @@ class Bulb extends React.Component {
     const { actions: { setCoordinates } } = this.props;
 
     const mouseDown$ = Observable.fromEvent(this.element, 'mousedown');
-    const mouseMove$ = Observable.fromEvent(document, 'mousemove');
+    const mouseMove$ = Observable.fromEvent(document, 'mousemove').throttleTime(60);
     const mouseUp$ = Observable.fromEvent(document, 'mouseup');
 
     const mouseDrag$ = mouseDown$
@@ -37,7 +42,12 @@ class Bulb extends React.Component {
       })
       .takeUntil(mouseUp$);
     })
-    .subscribe(setCoordinates);
+    .subscribe(coords => {
+      const { height, width } = measureClient();
+      const hue = (coords.clientX / width) * 360;
+      const lightness = ((coords.clientY/ height) * 10000) / 100
+      setCoordinates({ ...coords, hue, lightness });
+    });
 
   }
 
@@ -55,9 +65,14 @@ class Bulb extends React.Component {
     } = this.props;
 
     const elementStyle = coordinates
-      ? { position: 'absolute', left: coordinates.clientX, top: coordinates.clientY }
+      ? {
+        position: 'absolute',
+        left: coordinates.clientX,
+        top: coordinates.clientY,
+        backgroundColor: `hsl(${coordinates.hue}, 50%, ${coordinates.lightness}%`,
+      }
       : { };
-
+    console.log(elementStyle);
     return (
       <div
         ref={el => this.element = findDOMNode(el)}
