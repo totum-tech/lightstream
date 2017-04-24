@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 import { findDOMNode } from 'react-dom';
-import { Card, Heading, Slider } from 'rebass';
-import { Switch, Popover, Icon, Button } from 'antd';
+import { Switch, Popover, Icon, Button, Input } from 'antd';
 import { compose } from 'recompose';
 import { connectModule } from 'redux-modules';
 import module from './module';
@@ -25,7 +24,7 @@ class Bulb extends React.Component {
     flyd.on(props.actions.setHue, this.throttled$);
   }
 
-  componentDidMount() {
+  setupDragging = () => {
     const { actions: { setCoordinates } } = this.props;
 
     const mouseDown$ = Observable.fromEvent(this.element, 'mousedown');
@@ -49,7 +48,10 @@ class Bulb extends React.Component {
       const lightness = ((coords.clientY/ height) * 10000) / 100
       setCoordinates({ ...coords, hue, lightness });
     });
+  }
 
+  componentDidMount() {
+    this.setupDragging();
   }
 
   render() {
@@ -91,7 +93,12 @@ class Bulb extends React.Component {
         <Popover
           content={
             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'space-around' }}>
-              <label>{this.props.name}</label>
+              <label>
+                {this.props.name}
+              </label>
+              <Input>
+
+              </Input>
             </div>
           }
         >

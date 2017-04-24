@@ -17,6 +17,7 @@ const Controller = ({
   actions,
   bulbs,
   loggedActions,
+  activeFormation,
   formations,
 }) => (
   <div style={{ width: '100vw', height: '100vh' }}>
@@ -58,6 +59,8 @@ const Controller = ({
         onCreate={actions.saveFormation}
         formations={formations}
         setFormation={actions.setActiveFormation}
+        deleteFormation={actions.deleteFormation}
+        activeFormation={activeFormation}
       />
     </div>
   </div>

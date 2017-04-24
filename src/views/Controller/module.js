@@ -52,8 +52,6 @@ const module = createModule({
       Effects.constant(module.actions.fetchLights())
     ),
 
-    setFormations: (state, { payload }) => ({ ...state, formations: payload || [] }),
-
     login: (state, { payload }) => loop(
       { ...state, loading: true },
       Effects.promise(
@@ -124,23 +122,40 @@ const module = createModule({
       );
     },
 
-    saveFormation: (state, { payload: { name } }) => loop(
-      { ...state, formations: state.formations.concat({ name, bulbs: state.bulbs }) },
+    saveFormation: (state, { payload: { name, keyCode } }) => loop(
+      { ...state, formations: state.formations.concat({ name, bulbs: state.bulbs, keyCode }) },
       Effects.promise(
         v => storage.set(FORMATIONS_STORAGE, v).then(module.actions.saveSuccess),
         state.formations.concat({ name, bulbs: state.bulbs })
       )
     ),
 
+    setFormations: (state, { payload }) =>
+      ({ ...state, formations: payload || [] }),
+
+    deleteFormation: ({ formations, ...state }, { payload }) => loop(
+      { ...state, formations: formations.filter(f => f.name !== payload) },
+      Effects.promise(
+        v => storage.set(FORMATIONS_STORAGE, v).then(module.actions.saveSuccess),
+        formations.filter(f => f.name !== payload)
+      )
+    ),
+
     saveSuccess: state => state,
 
     setActiveFormation: (state, { payload: formation }) => {
+      let action;
+      if (state.activeFormation !== formation.name) {
+        action = bulb => bulbModule.actions.applyPreset({ ...bulb, power: true });
+      } else {
+        action = bulb => bulbModule.actions.setPower(false);
+      }
       const [ bulbs, nestedEffects ] = Object
         .keys(formation.bulbs)
         .reduce((acc, key) => {
           const [ bulb, effect ] = bulbModule.reducer(
             formation.bulbs[key],
-            bulbModule.actions.applyPreset(formation.bulbs[key])
+            action(formation.bulbs[key])
           );
           return [
             { ...acc[0], [key]: bulb },

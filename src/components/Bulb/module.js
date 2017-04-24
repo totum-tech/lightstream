@@ -60,9 +60,9 @@ const module = createModule({
         }),
         state.links.updateState,
         {
-          on: Number(payload.power),
+          on: payload.power,
           xy: payload.xy.map(coord => Number(coord)),
-          // transitiontime: Number(payload.transitionTime),
+          transitiontime: Number(1),
         }
       )
     ),
