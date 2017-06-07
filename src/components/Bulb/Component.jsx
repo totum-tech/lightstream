@@ -1,6 +1,13 @@
 import React, { PropTypes } from 'react';
 import { findDOMNode } from 'react-dom';
-import { Switch, Popover, Icon, Button, Input } from 'antd';
+import {
+  Slider,
+  Switch,
+  Popover,
+  Icon,
+  Button,
+  Input,
+} from 'antd';
 import { compose } from 'recompose';
 import { connectModule } from 'redux-modules';
 import module from './module';
@@ -92,13 +99,24 @@ class Bulb extends React.Component {
       >
         <Popover
           content={
-            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'space-around' }}>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'space-around',
+            }}>
               <label>
                 {this.props.name}
               </label>
-              <Input>
-
-              </Input>
+              <div className="icon-wrapper">
+                <Icon type="close" />
+                <Slider
+                  min={1}
+                  max={254}
+                  value={this.props.brightness}
+                  onChange={setBrightness}
+                />
+                <Icon type="bulb" />
+              </div>
             </div>
           }
         >

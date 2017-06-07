@@ -12,6 +12,7 @@ const module = createModule({
     name: '',
     power: true,
     effect: 'none',
+    brightness: 100,
     transitionTime: 1,
     coordinate: { pageX: 100, pageY: 100 },
     meta: {
