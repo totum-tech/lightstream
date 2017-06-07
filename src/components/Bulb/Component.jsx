@@ -1,13 +1,27 @@
 import React, { PropTypes } from 'react';
-import { Card, Heading, Button, Input, Slider } from 'rebass';
+import { findDOMNode } from 'react-dom';
+import {
+  Slider,
+  Switch,
+  Popover,
+  Icon,
+  Button,
+  Input,
+} from 'antd';
 import { compose } from 'recompose';
 import { connectModule } from 'redux-modules';
-import debugMode from '../../utils/debugMode';
 import module from './module';
 import flyd from 'flyd';
+import { Observable } from 'rxjs';
+
 import every from 'flyd/module/every';
 import { throttleWhen } from '../../utils/flydHelpers';
-import { hexToRgb, rgbToHue } from './utils';
+import { ColorPicker, Color, HarmonyTypes } from 'react-colorizer';
+
+const measureClient = () => ({
+  width: window.innerWidth,
+  height: window.innerHeight,
+});
 
 class Bulb extends React.Component {
   constructor(props) {
@@ -17,49 +31,104 @@ class Bulb extends React.Component {
     flyd.on(props.actions.setHue, this.throttled$);
   }
 
+  setupDragging = () => {
+    const { actions: { setCoordinates } } = this.props;
+
+    const mouseDown$ = Observable.fromEvent(this.element, 'mousedown');
+    const mouseMove$ = Observable.fromEvent(document, 'mousemove').throttleTime(60);
+    const mouseUp$ = Observable.fromEvent(document, 'mouseup');
+
+    const mouseDrag$ = mouseDown$
+    .flatMap(e => {
+      e.preventDefault();
+      console.log('Down event', e);
+      return mouseMove$
+      .map((e) => {
+        const { clientX, clientY } = e;
+        return { clientX, clientY };
+      })
+      .takeUntil(mouseUp$);
+    })
+    .subscribe(coords => {
+      const { height, width } = measureClient();
+      const hue = (coords.clientX / width) * 360;
+      const lightness = ((coords.clientY/ height) * 10000) / 100
+      setCoordinates({ ...coords, hue, lightness });
+    });
+  }
+
+  componentDidMount() {
+    this.setupDragging();
+  }
+
   render() {
-    const { actions: { setPower, setHue, setSaturation, setXY } } = this.props;
+    const {
+      actions: {
+        setPower,
+        setSaturation,
+        setXY,
+        setHex,
+        setBrightness,
+        setTransitionTime,
+      },
+      coordinates,
+      power,
+    } = this.props;
+
+    let elementStyle = {};
+    let buttonStyle = {};
+
+    if (coordinates) {
+      elementStyle = {
+        position: 'absolute',
+        left: coordinates.clientX,
+        top: coordinates.clientY,
+      };
+
+      buttonStyle = {
+        backgroundColor: power ? `hsl(${coordinates.hue}, 50%, ${coordinates.lightness}%` : 'black',
+        color: !power ? 'red' : 'white',
+      };
+
+    }
+
     return (
-      <Card
-        rounded
-        width={256}
+      <div
+        ref={el => this.element = findDOMNode(el)}
+        style={elementStyle}
       >
-        <Heading level={2} size={2}>
-          {this.props.name}
-        </Heading>
-        {this.props.power ?
-          <Button onClick={() => setPower(false)}>
-            Off
-          </Button>
-          :
-          <Button onClick={() => setPower(true)}>
-            On
-          </Button>
-        }
-
-        <Slider
-          label={`Hue: ${this.props.hue}`}
-          min={0}
-          max={65535}
-          value={this.props.hue}
-          onChange={({target}) => this.slider$(target.value)}
-        />
-
-        <input
-          type="color"
-          onChange={({target}) => setXY(rgbToHue(hexToRgb(target.value)))}
-        />
-
-        <Slider
-          label={`Saturation: ${this.props.saturation}`}
-          min={0}
-          max={254}
-          value={this.props.saturation}
-          onChange={({target}) => setSaturation(target.value)}
-        />
-
-
-      </Card>
+        <Popover
+          content={
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'space-around',
+            }}>
+              <label>
+                {this.props.name}
+              </label>
+              <div className="icon-wrapper">
+                <Icon type="close" />
+                <Slider
+                  min={1}
+                  max={254}
+                  value={this.props.brightness}
+                  onChange={setBrightness}
+                />
+                <Icon type="bulb" />
+              </div>
+            </div>
+          }
+        >
+          <Button
+            icon={power ? "bulb" : "close"}
+            shape="circle"
+            size="large"
+            onClick={() => setPower(!power)}
+            style={buttonStyle}
+          />
+        </Popover>
+      </div>
     );
   }
 }

@@ -5,23 +5,14 @@ import logo from './logo.svg';
 import './App.css';
 
 import createStore from './utils/createStore';
-
-import Bulb from './components/Bulb';
-import Group from './components/Group';
-import Controller from './components/Controller';
-import AvailableLights from './components/AvailableLights';
+import Controller from './views/Controller';
 
 class App extends Component {
   render() {
     return (
       <ModuleProvider store={createStore()} combineReducers={combineReducers}>
         <div className="App">
-          <div className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <h2>react-hue</h2>
-          </div>
-          <Controller ipAddress="192.168.1.71">
-          </Controller>
+          <Controller ipAddress="192.168.1.71" />
         </div>
       </ModuleProvider>
     );
