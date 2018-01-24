@@ -62,8 +62,9 @@ const module = createModule({
         state.links.updateState,
         {
           on: payload.power,
-          xy: payload.xy.map(coord => Number(coord)),
-          transitiontime: Number(1),
+          bri: Number(payload.brightness),
+          xy: rgbToHue(hexToRgb(payload.color)).map(coord => Number(coord)),
+          transitiontime: Number(payload.transitionTime),
         }
       )
     ),

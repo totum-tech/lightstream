@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { times } from 'ramda';
 import Bulb from '../Bulb';
-
+import bulbModule from '../Bulb/module';
 const Wrapper = styled.div`
   position: absolute;
   top: 15px;
@@ -35,18 +35,34 @@ const exampleTrackData = [
   {
     time: 0,
     transitionTime: 10,
+    brightness: 100,
     power: true,
-    coordinate: { pageX: 100, pageY: 100 }
+    color: '#FFB86F'
   },
   {
     time: 20,
-    power: false,
-    coordinate: { pageX: 100, pageY: 100 }
+    transitionTime: 20,
+    brightness: 10,
+    color: '#FFB86F'
   },
   {
     time: 30,
+    transitionTime: 30,
+    brightness: 150,
     power: true,
-    coordinate: { pageX: 150, pageY: 100 }
+    color: '#BA5C12'
+  },
+  {
+    time: 30,
+    transitionTime: 40,
+    brightness: 200,
+    color: '#3E2F5B'
+  },
+  {
+    time: 30,
+    transitionTime: 10,
+    brightness: 20,
+    color: '#261132'
   },
 ]
 
@@ -57,10 +73,7 @@ const play = (bulbs, dispatchUpdate) => {
       const [headNode, ...rest] = nodes
       console.log('playing', headNode)
       bulbs.map(bulb =>
-        dispatchUpdate({
-          type: 'bulb/applyPreset',
-          payload: headNode,
-        }, { id: bulb.id })
+        dispatchUpdate(bulbModule.actions.applyPreset(headNode), { id: bulb.id })
       )
       setTimeout(() => run(rest), (headNode.transitionTime || 10) * 100)
     }
