@@ -63,7 +63,7 @@ const module = createModule({
         {
           on: payload.power,
           xy: payload.xy.map(coord => Number(coord)),
-          transitiontime: Number(1),
+          transitiontime: Number(10),
         }
       )
     ),
