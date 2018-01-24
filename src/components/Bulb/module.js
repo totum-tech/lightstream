@@ -52,7 +52,7 @@ const module = createModule({
         set('brightness')(payload.brightness),
         set('coordinates')(payload.coordinates),
         set('power')(payload.power),
-        // set('transitionTime')(payload.transitionTime),
+        set('transitionTime')(payload.transitionTime),
       )(state),
       Effects.promise(
         light.set({

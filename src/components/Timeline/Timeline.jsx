@@ -31,12 +31,55 @@ const Track = styled.div`
   border-botom: 1px solid grey;
 `
 
+const exampleTrackData = [
+  {
+    time: 0,
+    transitionTime: 10,
+    power: true,
+    coordinate: { pageX: 100, pageY: 100 }
+  },
+  {
+    time: 20,
+    power: false,
+    coordinate: { pageX: 100, pageY: 100 }
+  },
+  {
+    time: 30,
+    power: true,
+    coordinate: { pageX: 150, pageY: 100 }
+  },
+]
+
+const play = (bulbs, dispatchUpdate) => {
+  const run = (nodes) => {
+    if (!nodes.length) { return true; }
+    else {
+      const [headNode, ...rest] = nodes
+      console.log('playing', headNode)
+      bulbs.map(bulb =>
+        dispatchUpdate({
+          type: 'bulb/applyPreset',
+          payload: headNode,
+        }, { id: bulb.id })
+      )
+      setTimeout(() => run(rest), (headNode.transitionTime || 10) * 100)
+    }
+  }
+  run(exampleTrackData)
+}
+
 const Timeline = ({ bulbs, interval, scale, time, updateLight }) => (
   <Wrapper>
     <Container>
+      <button onClick={() => play(bulbs, updateLight)}>
+        PLAY
+      </button>
       {bulbs.map(bulb => (
         <Track>
-          <Bulb {...bulb} dispatch={action => updateLight(action, { id: bulb.id })} />
+          <Bulb
+            {...bulb}
+            dispatch={action => updateLight(action, { id: bulb.id })}
+          />
           {times(i => (
             <Column width={time/interval}>
               Interval {i}
