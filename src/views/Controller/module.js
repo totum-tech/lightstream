@@ -108,6 +108,7 @@ const module = createModule({
 
     updateLight: (state, action) => {
       const { payload, meta } = action;
+      console.log(payload, meta)
       const [
         nstate,
         neffects,

@@ -41,7 +41,6 @@ class Bulb extends React.Component {
     const mouseDrag$ = mouseDown$
     .flatMap(e => {
       e.preventDefault();
-      console.log('Down event', e);
       return mouseMove$
       .map((e) => {
         const { clientX, clientY } = e;
@@ -114,6 +113,12 @@ class Bulb extends React.Component {
                   max={254}
                   value={this.props.brightness}
                   onChange={setBrightness}
+                />
+                <Slider
+                  min={0}
+                  max={20}
+                  value={this.props.transitionTime}
+                  onChange={setTransitionTime}
                 />
                 <Icon type="bulb" />
               </div>

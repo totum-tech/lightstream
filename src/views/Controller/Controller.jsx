@@ -9,6 +9,7 @@ import FormationList from '../../components/FormationList';
 import NewFormation from '../../components/NewFormation';
 import module from './module';
 import GradientField from '../../components/GradientField';
+import Timeline from '../../components/Timeline';
 
 const Controller = ({
   children,
@@ -36,22 +37,12 @@ const Controller = ({
         </div>
       }
     </div>
-    <div style={{display: 'flex', flexDirection: 'row', position: 'relative' }}>
-      <AvailableLights
+    <div style={{display: 'flex', flexDirection: 'row', position: 'relative', height: '100%' }}>
+      <Timeline
+        bulbs={Object.keys(bulbs).map(id => ({ ...bulbs[id], id }))}
         updateLight={actions.updateLight}
-        lights={bulbs}
-        fetchLights={actions.fetchLights}
-      />
-      <GradientField
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100%',
-        }}
-      />
+      >
+      </Timeline>
     </div>
     <Login onLogin={actions.login} activeProfile={username} />
     <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
