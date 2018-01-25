@@ -1,8 +1,12 @@
 import React from 'react';
+import { connectModule } from 'redux-modules';
 import styled from 'styled-components';
+import { mapProps, compose, lifecycle } from 'recompose';
 import { times } from 'ramda';
 import Bulb from '../Bulb';
 import bulbModule from '../Bulb/module';
+import module from './module';
+let numberOfPlays = 0;
 const Wrapper = styled.div`
   position: absolute;
   top: 15px;
@@ -31,73 +35,31 @@ const Track = styled.div`
   border-botom: 1px solid grey;
 `
 
-const exampleTrackData = [
-  {
-    time: 0,
-    transitionTime: 10,
-    brightness: 100,
-    power: true,
-    color: '#FFB86F'
-  },
-  {
-    time: 20,
-    transitionTime: 20,
-    brightness: 10,
-    color: '#FFB86F'
-  },
-  {
-    time: 30,
-    transitionTime: 30,
-    brightness: 150,
-    power: true,
-    color: '#BA5C12'
-  },
-  {
-    time: 30,
-    transitionTime: 40,
-    brightness: 200,
-    color: '#3E2F5B'
-  },
-  {
-    time: 30,
-    transitionTime: 10,
-    brightness: 20,
-    color: '#261132'
-  },
-]
-
-const play = (bulbs, dispatchUpdate) => {
-  const run = (nodes) => {
-    if (!nodes.length) { return true; }
-    else {
-      const [headNode, ...rest] = nodes
-      console.log('playing', headNode)
-      bulbs.map(bulb =>
-        dispatchUpdate(bulbModule.actions.applyPreset(headNode), { id: bulb.id })
-      )
-      setTimeout(() => run(rest), (headNode.transitionTime || 10) * 100)
-    }
-  }
-  run(exampleTrackData)
-}
-
-const Timeline = ({ bulbs, interval, scale, time, updateLight }) => (
+const Timeline = ({ tracks, bulbs, interval, scale, updateLight, totalTime, actions }) => (
   <Wrapper>
     <Container>
-      <button onClick={() => play(bulbs, updateLight)}>
+      <button onClick={() => actions.play()}>
         PLAY
       </button>
-      {bulbs.map(bulb => (
+      <button onClick={() => actions.stop()}>
+        stop
+      </button>
+      {bulbs.map((bulb, i) => (
         <Track>
           <Bulb
             {...bulb}
             dispatch={action => updateLight(action, { id: bulb.id })}
           />
-          {times(i => (
-            <Column width={time/interval}>
-              Interval {i}
-            </Column>
-          ), time/interval)}
+          {tracks[`${i}`].nodes.map(node => (
+            <div style={{
+              height: '100%',
+              flex: ((node.transitionTime + node.time) / totalTime) * 100,
+              backgroundColor: node.color,
+              borderRight: '1px solid white',
+            }}>
+              <h1>{i}</h1>
+            </div>
+          ))}
         </Track>
       ))}
     </Container>
@@ -109,4 +71,48 @@ Timeline.defaultProps = {
   time: 60,
 }
 
-export default Timeline
+export default compose(
+  connectModule(module),
+  mapProps(props => ({
+    ...props,
+    totalTime: Object.keys(props.tracks).reduce((totalTime, key) => {
+      return props.tracks[key].nodes
+        .reduce((time, node) =>
+          time += node.time + node.transitionTime,
+          totalTime
+        )
+    }, 0)
+  })),
+  lifecycle({
+    componentWillMount() {
+      console.log(this.props);
+    },
+    componentWillReceiveProps(nextProps) {
+      const { tracks, updateLight, bulbs } = this.props;
+
+      const play = (bulb, dispatchUpdate, trackData) => {
+        const run = (nodes, transitionTime) => {
+          if (!nodes.length) { numberOfPlays = false }
+          else {
+            const [headNode, ...rest] = nodes
+            if (transitionTime) {
+              dispatchUpdate(bulbModule.actions.setTransitionTime(transitionTime), { id: bulb.id })
+            }
+            console.log('playing', headNode)
+            dispatchUpdate(bulbModule.actions.applyPreset(headNode), { id: bulb.id })
+            setTimeout(() => run(rest, headNode.transitionTime + headNode.time * 100))
+          }
+        }
+        run(trackData)
+      }
+
+      if (nextProps.playing && !numberOfPlays) {
+        console.log('PLAYING', numberOfPlays, 'is this thing on?')
+        numberOfPlays = true
+        bulbs.map(bulb => {
+          play(bulb, updateLight, tracks['1'].nodes)
+        })
+      }
+    }
+  })
+)(Timeline)
