@@ -19,11 +19,12 @@ const module = createModule({
   transformations: {
     updateTrack: (state, action) => {
       const { payload, meta } = action;
-      console.log(payload, meta)
+
       const [
         nstate,
         neffects,
       ] = trackModule().reducer(state.tracks[meta.id], payload);
+      console.log('Updated state', nstate, payload)
 
       return loop(
         { ...state, tracks: { ...state.tracks, [meta.id]: nstate } },

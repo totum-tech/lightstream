@@ -44,20 +44,23 @@ const Timeline = ({ play, tracks, bulbs, interval, scale, updateLight, totalTime
       <button onClick={() => play()}>
         PLAY
       </button>
-      {bulbs.map((bulb, i) => (
+      {bulbs.map((bulb, index) => (
         <Track>
           <Bulb
             {...bulb}
             dispatch={action => updateLight(action, { id: bulb.id })}
           />
-          {tracks[`${i}`].nodes.map(node => (
+          {tracks[`${index}`].nodes.map((node, i) => (
             <TrackNode
               transitionTime={node.transitionTime}
               time={node.time}
               totalTime={totalTime}
               color={node.color}
               brightness={node.brightness}
-              updateTrack={actions.updateTrack}
+              index={i}
+              updateTrack={action =>
+                actions.updateTrack(action, { id: index })
+              }
             />
           ))}
         </Track>
@@ -97,18 +100,18 @@ export default compose(
           else {
             const [headNode, ...rest] = nodes
             if (transitionTime) {
-              dispatchUpdate(bulbModule.actions.setTransitionTime(transitionTime), { id: bulb.id })
+              dispatchUpdate(bulbModule.actions.setTransitionTime(headNode.transitionTime), { id: bulb.id })
             }
             console.log('playing', headNode)
             dispatchUpdate(bulbModule.actions.applyPreset(headNode), { id: bulb.id })
-            setTimeout(() => run(rest, headNode.transitionTime + headNode.time * 100))
+            setTimeout(() => run(rest, rest[0].transitionTime), headNode.time * 100)
           }
         }
         run(trackData)
       }
 
-      props.bulbs.map(bulb => {
-        play(bulb, props.updateLight, props.tracks['1'].nodes)
+      props.bulbs.map((bulb, i) => {
+        play(bulb, props.updateLight, props.tracks[i].nodes)
       })
     }
   }))

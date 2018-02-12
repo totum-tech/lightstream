@@ -1,5 +1,5 @@
 import { createModule } from 'redux-modules';
-
+import { Effects } from 'redux-loop';
 const randomHex = () => '#'+(Math.random()*0xFFFFFF<<0).toString(16);
 
 const exampleTrackData = () => [
@@ -62,34 +62,42 @@ const module = () => createModule({
     currentIndex: 0,
   },
   transformations: {
-    setColor: (state, { payload: { index, color } }) => ({
-      node: state.nodes.map((node, i) => {
-        if (i === index) { return { ...node, color } }
+    setColor: (state, { payload: { index, color } }) => [{
+      ... state,
+      nodes: state.nodes.map((node, i) => {
+        if (i === index) {
+          return { ...node, color }
+        }
         return node;
-      }),
-      ... state
-    }),
-    setBrightness: (state, { payload: { index, brightness } }) => ({
-      node: state.nodes.map((node, i) => {
-        if (i === index) { return { ...node, brightness } }
+      })
+    }, Effects.none()],
+    setBrightness: (state, { payload: { index, brightness } }) => [{
+      ... state,
+      nodes: state.nodes.map((node, i) => {
+        if (i === index) {
+          return { ...node, brightness }
+        }
         return node;
-      }),
-      ... state
-    }),
-    setTime: (state, { payload: { index, time } }) => ({
-      node: state.nodes.map((node, i) => {
-        if (i === index) { return { ...node, time } }
+      })
+    }, Effects.none()],
+    setTime: (state, { payload: { index, time } }) => [{
+      ... state,
+      nodes: state.nodes.map((node, i) => {
+        if (i === index) {
+          return { ...node, time }
+        }
         return node;
-      }),
-      ... state
-    }),
-    setTransitionTime: (state, { payload: { index, transitionTime } }) => ({
-      node: state.nodes.map((node, i) => {
-        if (i === index) { return { ...node, transitionTime } }
+      })
+    }, Effects.none()],
+    setTransitionTime: (state, { payload: { index, transitionTime } }) => [{
+      ... state,
+      nodes: state.nodes.map((node, i) => {
+        if (i === index) {
+          return { ...node, transitionTime }
+        }
         return node;
-      }),
-      ... state
-    })
+      })
+    }, Effects.none()],
   },
 });
 
