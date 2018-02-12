@@ -6,7 +6,10 @@ import { times } from 'ramda';
 import Bulb from '../Bulb';
 import bulbModule from '../Bulb/module';
 import module from './module';
+import TrackNode from '../TrackNode';
+
 let numberOfPlays = 0;
+
 const Wrapper = styled.div`
   position: absolute;
   top: 15px;
@@ -35,14 +38,11 @@ const Track = styled.div`
   border-botom: 1px solid grey;
 `
 
-const Timeline = ({ tracks, bulbs, interval, scale, updateLight, totalTime, actions }) => (
+const Timeline = ({ play, tracks, bulbs, interval, scale, updateLight, totalTime, actions }) => (
   <Wrapper>
     <Container>
-      <button onClick={() => actions.play()}>
+      <button onClick={() => play()}>
         PLAY
-      </button>
-      <button onClick={() => actions.stop()}>
-        stop
       </button>
       {bulbs.map((bulb, i) => (
         <Track>
@@ -51,14 +51,14 @@ const Timeline = ({ tracks, bulbs, interval, scale, updateLight, totalTime, acti
             dispatch={action => updateLight(action, { id: bulb.id })}
           />
           {tracks[`${i}`].nodes.map(node => (
-            <div style={{
-              height: '100%',
-              flex: ((node.transitionTime + node.time) / totalTime) * 100,
-              backgroundColor: node.color,
-              borderRight: '1px solid white',
-            }}>
-              <h1>{i}</h1>
-            </div>
+            <TrackNode
+              transitionTime={node.transitionTime}
+              time={node.time}
+              totalTime={totalTime}
+              color={node.color}
+              brightness={node.brightness}
+              updateTrack={actions.updateTrack}
+            />
           ))}
         </Track>
       ))}
@@ -87,9 +87,10 @@ export default compose(
     componentWillMount() {
       console.log(this.props);
     },
-    componentWillReceiveProps(nextProps) {
-      const { tracks, updateLight, bulbs } = this.props;
-
+  }),
+  mapProps(props => ({
+    ...props,
+    play: () => {
       const play = (bulb, dispatchUpdate, trackData) => {
         const run = (nodes, transitionTime) => {
           if (!nodes.length) { numberOfPlays = false }
@@ -106,13 +107,9 @@ export default compose(
         run(trackData)
       }
 
-      if (nextProps.playing && !numberOfPlays) {
-        console.log('PLAYING', numberOfPlays, 'is this thing on?')
-        numberOfPlays = true
-        bulbs.map(bulb => {
-          play(bulb, updateLight, tracks['1'].nodes)
-        })
-      }
+      props.bulbs.map(bulb => {
+        play(bulb, props.updateLight, props.tracks['1'].nodes)
+      })
     }
-  })
+  }))
 )(Timeline)

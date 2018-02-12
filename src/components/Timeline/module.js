@@ -6,11 +6,11 @@ const module = createModule({
   name: 'timeline',
   initialState: {
     tracks: {
-      0: trackModule.reducer(undefined, { type: 'init' }),
-      1: trackModule.reducer(undefined, { type: 'init' }),
-      2: trackModule.reducer(undefined, { type: 'init' }),
-      3: trackModule.reducer(undefined, { type: 'init' }),
-      4: trackModule.reducer(undefined, { type: 'init' }),
+      0: trackModule().reducer(undefined, { type: 'init' }),
+      1: trackModule().reducer(undefined, { type: 'init' }),
+      2: trackModule().reducer(undefined, { type: 'init' }),
+      3: trackModule().reducer(undefined, { type: 'init' }),
+      4: trackModule().reducer(undefined, { type: 'init' }),
     },
     playing: false,
     repeat: false,
@@ -23,7 +23,7 @@ const module = createModule({
       const [
         nstate,
         neffects,
-      ] = trackModule.reducer(state.tracks[meta.id], payload);
+      ] = trackModule().reducer(state.tracks[meta.id], payload);
 
       return loop(
         { ...state, tracks: { ...state.tracks, [meta.id]: nstate } },
